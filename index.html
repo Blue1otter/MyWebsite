@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern SUVAṬ Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="login-container">
+        <div class="login-box">
+            <h2>Login</h2>
+            <form id="login-form">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+                <div id="error-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SUVAṬ Calculator -->
+    <div id="calculator-screen" class="calculator-container" style="display: none;">
+        <div class="calculator-box">
+            <h2>SUVAṬ Calculator</h2>
+            <p>Fill in any 3 values to calculate the others.</p>
+            <form id="suvat-form">
+                <input type="number" id="s" placeholder="Displacement (s)">
+                <input type="number" id="u" placeholder="Initial Velocity (u)">
+                <input type="number" id="v" placeholder="Final Velocity (v)">
+                <input type="number" id="a" placeholder="Acceleration (a)">
+                <input type="number" id="t" placeholder="Time (t)">
+                <button type="submit">Calculate</button>
+            </form>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        // Login Script
+        const loginForm = document.getElementById('login-form');
+        const errorMessage = document.getElementById('error-message');
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'user' && password === 'password') {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('calculator-screen').style.display = 'flex';
+            } else {
+                errorMessage.textContent = 'Invalid username or password';
+                errorMessage.style.color = 'red';
+            }
+        });
+
+        // SUVAṬ Calculator Script
+        const suvatForm = document.getElementById('suvat-form');
+        const resultDiv = document.getElementById('result');
+        
+        suvatForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const s = parseFloat(document.getElementById('s').value);
+            const u = parseFloat(document.getElementById('u').value);
+            const v = parseFloat(document.getElementById('v').value);
+            const a = parseFloat(document.getElementById('a').value);
+            const t = parseFloat(document.getElementById('t').value);
+
+            // Count the number of values entered (not NaN)
+            let enteredValues = [s, u, v, a, t].filter(val => !isNaN(val)).length;
+
+            if (enteredValues < 3) {
+                resultDiv.innerHTML = '<h3 style="color:red;">Please enter at least 3 values.</h3>';
+                return;
+            }
+
+            // Solve SUVAṬ based on available values
+            let calculated = {};
+
+            // Use equations to calculate missing values
+
+            // Equation: v = u + at
+            if (!isNaN(u) && !isNaN(a) && !isNaN(t)) {
+                calculated.v = u + a * t;
+            }
+
+            // Equation: s = ut + 0.5at²
+            if (!isNaN(u) && !isNaN(a) && !isNaN(t)) {
+                calculated.s = u * t + 0.5 * a * Math.pow(t, 2);
+            }
+
+            // Equation: v² = u² + 2as
+            if (!isNaN(u) && !isNaN(a) && !isNaN(s)) {
+                calculated.v = Math.sqrt(u * u + 2 * a * s);
+            }
+
+            // Equation: s = vt - 0.5at²
+            if (!isNaN(v) && !isNaN(a) && !isNaN(t)) {
+                calculated.s = v * t - 0.5 * a * Math.pow(t, 2);
+            }
+
+            // Equation: v = u + at
+            if (!isNaN(v) && !isNaN(a) && !isNaN(u)) {
+                calculated.t = (v - u) / a;
+            }
+
+            // Display results
+            resultDiv.innerHTML = '<h3>Calculated Results:</h3>';
+            for (let variable in calculated) {
+                resultDiv.innerHTML += `<p><strong>${variable}</strong>: ${calculated[variable].toFixed(2)}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
